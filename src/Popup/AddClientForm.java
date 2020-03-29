@@ -40,14 +40,14 @@ public class AddClientForm extends JFrame {
 	 * Create the frame.
 	 */
 	public AddClientForm() {
-		setTitle("Add Person");
-		setBounds(100, 100, 594, 410);
+		setTitle("\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F");
+		setBounds(100, 100, 589, 248);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblRoom = new JLabel("Room");
+		JLabel lblRoom = new JLabel("\u041A\u0430\u0431\u0438\u043D\u0435\u0442");
 		lblRoom.setBounds(43, 31, 56, 16);
 		contentPane.add(lblRoom);
 		
@@ -58,43 +58,43 @@ public class AddClientForm extends JFrame {
 		contentPane.add(txtAddRoom);
 		txtAddRoom.setColumns(10);
 		
-		JLabel lblLastname = new JLabel("LastName");
-		lblLastname.setBounds(43, 87, 85, 16);
+		JLabel lblLastname = new JLabel("\u0424\u0430\u043C\u0438\u043B\u0438\u044F");
+		lblLastname.setBounds(171, 23, 85, 16);
 		contentPane.add(lblLastname);
 		
-		JLabel lblName = new JLabel("Name");
-		lblName.setBounds(43, 155, 56, 16);
+		JLabel lblName = new JLabel("\u0418\u043C\u044F");
+		lblName.setBounds(299, 23, 56, 16);
 		contentPane.add(lblName);
 		
-		JLabel lblSecondname = new JLabel("SecondName");
-		lblSecondname.setBounds(22, 219, 116, 16);
+		JLabel lblSecondname = new JLabel("\u041E\u0442\u0447\u0435\u0441\u0442\u0432\u043E");
+		lblSecondname.setBounds(407, 23, 116, 16);
 		contentPane.add(lblSecondname);
 		
-		JLabel lblPost = new JLabel("Post");
-		lblPost.setBounds(195, 87, 56, 16);
+		JLabel lblPost = new JLabel("\u0414\u043E\u043B\u0436\u043D\u043E\u0441\u0442\u044C");
+		lblPost.setBounds(22, 87, 97, 16);
 		contentPane.add(lblPost);
 		
 		txtLastName = new JTextField();
-		txtLastName.setBounds(12, 116, 116, 22);
+		txtLastName.setBounds(140, 52, 116, 22);
 		contentPane.add(txtLastName);
 		txtLastName.setColumns(10);
 		
 		txtName = new JTextField();
-		txtName.setBounds(12, 184, 116, 22);
+		txtName.setBounds(268, 52, 116, 22);
 		contentPane.add(txtName);
 		txtName.setColumns(10);
 		
 		txtSecondName = new JTextField();
-		txtSecondName.setBounds(12, 248, 116, 22);
+		txtSecondName.setBounds(397, 52, 116, 22);
 		contentPane.add(txtSecondName);
 		txtSecondName.setColumns(10);
 		
 		txtPost = new JTextField();
-		txtPost.setBounds(159, 116, 116, 22);
+		txtPost.setBounds(12, 116, 116, 22);
 		contentPane.add(txtPost);
 		txtPost.setColumns(10);
 		
-		JButton btnAddPerson = new JButton("AddPerson");
+		JButton btnAddPerson = new JButton("\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C");
 		btnAddPerson.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				//addPerson method			
@@ -147,7 +147,7 @@ public class AddClientForm extends JFrame {
 		 			            
 		 			            String SQL4 = "INSERT INTO Login VALUES ('"+ idPerson +"','"+ login +"','"+ password +"')";
 		 			           stmt.executeUpdate(SQL4);
-			
+		 			           
 		 			       JOptionPane.showMessageDialog(null, "Пользователь добавлен", "Успеншо", JOptionPane.INFORMATION_MESSAGE);
 		 			       dispose();
 		            	}
@@ -161,24 +161,24 @@ public class AddClientForm extends JFrame {
 			
 		}
 		});
-		btnAddPerson.setBounds(235, 309, 97, 25);
+		btnAddPerson.setBounds(240, 163, 97, 25);
 		contentPane.add(btnAddPerson);
 		
-		JLabel lblLogin = new JLabel("Login");
-		lblLogin.setBounds(417, 170, 56, 16);
+		JLabel lblLogin = new JLabel("\u041B\u043E\u0433\u0438\u043D");
+		lblLogin.setBounds(257, 92, 56, 16);
 		contentPane.add(lblLogin);
 		
 		txtLogin = new JTextField();
-		txtLogin.setBounds(376, 194, 116, 22);
+		txtLogin.setBounds(227, 116, 116, 22);
 		contentPane.add(txtLogin);
 		txtLogin.setColumns(10);
 		
-		JLabel lblNewLabel = new JLabel("Password");
-		lblNewLabel.setBounds(405, 219, 56, 16);
+		JLabel lblNewLabel = new JLabel("\u041F\u0430\u0440\u043E\u043B\u044C");
+		lblNewLabel.setBounds(407, 87, 56, 16);
 		contentPane.add(lblNewLabel);
 		
 		txtPassword = new JTextField();
-		txtPassword.setBounds(376, 248, 116, 22);
+		txtPassword.setBounds(379, 116, 116, 22);
 		contentPane.add(txtPassword);
 		txtPassword.setColumns(10);
 	}

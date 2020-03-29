@@ -47,12 +47,12 @@ public class Menu extends JFrame {
 	private static ArrayList<String> room = new ArrayList<String>();
 	private static DefaultListModel<String> listModelRoom;
 	private static DefaultListModel<String> listModelPerson;
-	private String idRoom, idPerson;
+	public static String idRoom, idPerson;
 	private JPopupMenu pMenuRoom;
 	private JPopupMenu pMenuPerson;
 	private JTextField txtRoom;
 	private String roomAdd;
-	public static String roomNumber;
+	public static String roomNumber, lastNameString, nameString, secondNameString, postString, loginString, passwordString;
 
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException{	
@@ -95,6 +95,8 @@ public class Menu extends JFrame {
 
 
 	public Menu() {
+		setTitle("\u0410\u0434\u043C\u0438\u043D\u0438\u0441\u0442\u0440\u0430\u0442\u043E\u0440");
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 685, 498);
 		contentPane = new JPanel();
@@ -196,7 +198,6 @@ public class Menu extends JFrame {
         {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                System.out.println ("EEEEEEEEEEEEEEEEEEEEEE");
                 
                 int result = JOptionPane.showOptionDialog(null, 
                         "Удаление комнаты приведет к удалению всех сотрудников в ней. Продолжить?", 
@@ -206,7 +207,6 @@ public class Menu extends JFrame {
                         null, 
                         new String[]{"ДА", "НЕТ"},
                         "default");
-// Окна подтверждения c 2-мя параметрами
                 if (result == JOptionPane.YES_OPTION)
                 {
                 	try {
@@ -222,7 +222,6 @@ public class Menu extends JFrame {
     		            String SQL = "SELECT ID, RoomNumber FROM RoomTable";
     		            ResultSet rs = stmt.executeQuery(SQL);
     		           
-                        // Получение элемента
                      	String val = lRoom.getSelectedValue().toString(); // взять значение JList
                      	
      		            while (rs.next()) {
@@ -318,15 +317,280 @@ public class Menu extends JFrame {
 		pMenuPerson.add(redactPerson);
         
 		
-		info.addActionListener(new ActionListener()
+		info.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//открыть новое окно
+				roomNumber = lRoom.getSelectedValue().toString();
+				
+            	String val = lPerson.getSelectedValue().toString(); // взять значение JList
+            	String[] subStr;
+            	String delimeter = " ";
+            	subStr = val.split(delimeter, 4); // Разделения строки str с помощью метода split()
+                System.out.println (val);
+                String[] checkStr = new String[subStr.length];
+                for(int i = 0; i < subStr.length; i++) { 
+                	if(i == subStr.length-1){
+                		checkStr[i] = subStr[i].substring(2);
+                    	System.out.println(checkStr[i]);
+                    	break;
+                    }
+                	checkStr[i]=subStr[i];
+                    System.out.println(checkStr[i]);
+
+                 }
+				lastNameString = checkStr[0];
+				nameString = checkStr[1];
+				secondNameString = checkStr[2];
+				postString = checkStr[3];
+				
+				
+				try {
+					Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}  
+				
+				String connectionUrl = "jdbc:sqlserver://localhost\\SQLEXPRESS;database=TestBaza;integratedSecurity=true;";
+				
+				
+				try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();Statement stmt2 = con.createStatement(); Statement stmt3 = con.createStatement();) 
+				{
+		            String SQL = "SELECT ID, RoomNumber FROM RoomTable";
+		            ResultSet rs = stmt.executeQuery(SQL);
+		            
+		            while (rs.next()) {
+		            	if(rs.getString("RoomNumber").equals(roomNumber)){
+		            		idRoom = rs.getString("ID");
+		            		break;
+		            	}
+		            	} 
+						
+				            //String SQL2 = "DELETE FROM Colloborators WHERE ID_ROOM = "+idRoom+" AND LastName = '"+checkStr[0]+"' AND Name = '"+checkStr[1]+"' AND SecondName = '"+checkStr[2]+"' AND Post = '"+checkStr[3]+"'";
+				            String SQL3 = "SELECT * FROM Colloborators WHERE ID_ROOM = "+idRoom+"";
+				            String SQL4 = "SELECT * FROM Login WHERE ID_L = "+ idPerson +"";
+				            ResultSet rs3 = stmt2.executeQuery(SQL3);
+				            
+				            while (rs3.next()) {
+				            	if(rs3.getString("LastName").equals(checkStr[0]) && rs3.getString("Name").equals(checkStr[1]) && rs3.getString("SecondName").equals(checkStr[2]) && rs3.getString("Post").equals(checkStr[3]))
+				            	{
+				            		idPerson = rs3.getString("ID");
+				            	}
+				            	}
+				             
+		            
+		        }
+		        // Handle any errors that may have occurred.
+		        catch (SQLException e) {
+		            e.printStackTrace();
+		        }
+				
+				
+				try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) 
+				{
+				            String SQL4 = "SELECT * FROM Login WHERE ID_L = "+ idPerson +"";
+
+				            ResultSet rs4 = stmt.executeQuery(SQL4);
+				            		while(rs4.next()){
+					            		loginString = rs4.getString("Login");
+					            		passwordString = rs4.getString("Password");
+					            		}
+
+				           // System.out.print(loginString + " " + passwordString +" " + idPerson + " " + idRoom);
+		            
+		        }
+		        // Handle any errors that may have occurred.
+		        catch (SQLException e) {
+		            e.printStackTrace();
+		        }
+				
+
+				InfoClientForm infoForm = new InfoClientForm();
+				infoForm.setVisible(true);
+				
+			}
+		});
+		
+		deletePerson.addActionListener(new ActionListener()
         {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                System.out.println ("VAUUUUU");
+                int result = JOptionPane.showOptionDialog(null, 
+                        "Вы действительно хотите удалить сотрудника?", 
+                        "Внимание", 
+                        JOptionPane.OK_CANCEL_OPTION, 
+                        JOptionPane.INFORMATION_MESSAGE, 
+                        null, 
+                        new String[]{"ДА", "НЕТ"},
+                        "default");
+                if (result == JOptionPane.YES_OPTION)
+                {
+            	String val = lPerson.getSelectedValue().toString(); // взять значение JList
+            	String[] subStr;
+            	String delimeter = " ";
+            	subStr = val.split(delimeter, 4); // Разделения строки str с помощью метода split()
+                System.out.println (val);
+                String[] checkStr = new String[subStr.length];
+                for(int i = 0; i < subStr.length; i++) { 
+                	if(i == subStr.length-1){
+                		checkStr[i] = subStr[i].substring(2);
+                    	System.out.println(checkStr[i]);
+                    	break;
+                    }
+                	checkStr[i]=subStr[i];
+                    System.out.println(checkStr[i]);
+
+                 }
+                
+				try {
+					Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}  
+				
+				String connectionUrl = "jdbc:sqlserver://localhost\\SQLEXPRESS;database=TestBaza;integratedSecurity=true;";
+				
+				
+				try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();Statement stmt2 = con.createStatement();) {
+		            String SQL = "SELECT ID, RoomNumber FROM RoomTable";
+		            ResultSet rs = stmt.executeQuery(SQL);
+		            
+		            while (rs.next()) {
+		            	if(rs.getString("RoomNumber").equals(lRoom.getSelectedValue().toString())){
+		            		idRoom = rs.getString("ID");
+		            		break;
+		            	}
+		            	} 
+						
+				            String SQL2 = "DELETE FROM Colloborators WHERE ID_ROOM = "+idRoom+" AND LastName = '"+checkStr[0]+"' AND Name = '"+checkStr[1]+"' AND SecondName = '"+checkStr[2]+"' AND Post = '"+checkStr[3]+"'";
+				            String SQL3 = "SELECT * FROM Colloborators WHERE ID_ROOM = "+idRoom+"";
+				            String SQL4 = "DELETE FROM Login WHERE ID_L = "+ idPerson +"";
+				            ResultSet rs3 = stmt2.executeQuery(SQL3);
+				            
+				            while (rs3.next()) {
+				            	if(rs3.getString("LastName").equals(checkStr[0]) && rs3.getString("Name").equals(checkStr[1]) && rs3.getString("SecondName").equals(checkStr[2]) && rs3.getString("Post").equals(checkStr[3]))
+				            	{
+				            		idPerson = rs3.getString("ID");
+				            		stmt.executeUpdate(SQL4);
+				            		stmt.executeUpdate(SQL2);
+				            		JOptionPane.showMessageDialog(null, "Пользователь удален", "Выполнено", JOptionPane.INFORMATION_MESSAGE);
+				            		listModelPerson.removeElementAt(lPerson.getSelectedIndex());
+				            	}
+				            	}
+		            
+		        }
+		        // Handle any errors that may have occurred.
+		        catch (SQLException e) {
+		            e.printStackTrace();
+		        }
+            }
+                else if (result == JOptionPane.NO_OPTION)
+                	System.out.println ("nooooooooooooooooooooooooo");
+				
             }
         });
         
         
+		
+		redactPerson.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//открыть новое окно
+				
+				roomNumber = lRoom.getSelectedValue().toString();
+				
+            	String val = lPerson.getSelectedValue().toString(); // взять значение JList
+            	String[] subStr;
+            	String delimeter = " ";
+            	subStr = val.split(delimeter, 4); // Разделения строки str с помощью метода split()
+                System.out.println (val);
+                String[] checkStr = new String[subStr.length];
+                for(int i = 0; i < subStr.length; i++) { 
+                	if(i == subStr.length-1){
+                		checkStr[i] = subStr[i].substring(2);
+                    	System.out.println(checkStr[i]);
+                    	break;
+                    }
+                	checkStr[i]=subStr[i];
+                    System.out.println(checkStr[i]);
+
+                 }
+				lastNameString = checkStr[0];
+				nameString = checkStr[1];
+				secondNameString = checkStr[2];
+				postString = checkStr[3];
+				
+				
+				try {
+					Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}  
+				
+				String connectionUrl = "jdbc:sqlserver://localhost\\SQLEXPRESS;database=TestBaza;integratedSecurity=true;";
+				
+				
+				try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();Statement stmt2 = con.createStatement(); Statement stmt3 = con.createStatement();) 
+				{
+		            String SQL = "SELECT ID, RoomNumber FROM RoomTable";
+		            ResultSet rs = stmt.executeQuery(SQL);
+		            
+		            while (rs.next()) {
+		            	if(rs.getString("RoomNumber").equals(roomNumber)){
+		            		idRoom = rs.getString("ID");
+		            		break;
+		            	}
+		            	} 
+						
+				            //String SQL2 = "DELETE FROM Colloborators WHERE ID_ROOM = "+idRoom+" AND LastName = '"+checkStr[0]+"' AND Name = '"+checkStr[1]+"' AND SecondName = '"+checkStr[2]+"' AND Post = '"+checkStr[3]+"'";
+				            String SQL3 = "SELECT * FROM Colloborators WHERE ID_ROOM = "+idRoom+"";
+				           // String SQL4 = "SELECT * FROM Login WHERE ID_L = "+ idPerson +"";
+				            ResultSet rs3 = stmt2.executeQuery(SQL3);
+				           // ResultSet rs4 = stmt3.executeQuery(SQL4);
+				            
+				            while (rs3.next()) {
+				            	if(rs3.getString("LastName").equals(checkStr[0]) && rs3.getString("Name").equals(checkStr[1]) && rs3.getString("SecondName").equals(checkStr[2]) && rs3.getString("Post").equals(checkStr[3]))
+				            	{
+				            		idPerson = rs3.getString("ID");
+				            	}
+				            	}
+				             
+		            
+		        }
+		        // Handle any errors that may have occurred.
+		        catch (SQLException e) {
+		            e.printStackTrace();
+		        }
+				
+				
+				try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) 
+				{
+				            String SQL4 = "SELECT * FROM Login WHERE ID_L = "+ idPerson +"";
+
+				            ResultSet rs4 = stmt.executeQuery(SQL4);
+				            		while(rs4.next()){
+					            		loginString = rs4.getString("Login");
+					            		passwordString = rs4.getString("Password");
+					            		// System.out.println("VHOD");
+					            		}
+
+				           // System.out.print(loginString + " " + passwordString +" " + idPerson + " " + idRoom);
+		            
+		        }
+		        // Handle any errors that may have occurred.
+		        catch (SQLException e) {
+		            e.printStackTrace();
+		        }
+				
+				
+				
+				RedactPerson redactForm = new RedactPerson();
+				redactForm.setVisible(true);
+				
+			}
+		});
+		
 		
 		JScrollPane scroll2 = new JScrollPane(lPerson);
 		scroll2.setBounds(235, 60, 409, 216);
