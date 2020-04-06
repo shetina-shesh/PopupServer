@@ -1,4 +1,4 @@
-package Popup;
+package Admin;
 
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
