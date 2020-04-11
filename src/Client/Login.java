@@ -7,12 +7,18 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Login extends JFrame {
 
@@ -21,6 +27,9 @@ public class Login extends JFrame {
 	private JPanel contentPane;
 	private JTextField txtLogin;
 	private JTextField txtPassword;
+	private String namePerson;
+	private String secondNamePerson;
+	private String lastNamePerson;
 
 
 	public static void main(String[] args) {
@@ -86,9 +95,42 @@ public class Login extends JFrame {
 	
 	
 	private void login(String login, String password) {
-		dispose();
-		new Client(login, password);
+		
+		try {
+			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}  
+		String connectionUrl = "jdbc:sqlserver://localhost\\SQLEXPRESS;database=TestBaza;integratedSecurity=true;";
+		
+		try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
+
+	    	   String SQL ="SELECT Colloborators.LastName, Colloborators.Name, Colloborators.SecondName, Colloborators.Post, Login.Login, Login.Password FROM Colloborators, Login WHERE Colloborators.ID = Login.ID_L AND Login.Login = '"+login+"' AND Login.Password = '"+password+"'";
+	    	   ResultSet rs = stmt.executeQuery(SQL);
+	    	   
+	            while (rs.next()) {	
+	            	namePerson = rs.getString("Name");
+	            	secondNamePerson = rs.getString("SecondName");
+	            	lastNamePerson = rs.getString("LastName");    
+	            }
+	            
+	            System.out.println(lastNamePerson + " " + namePerson + " " + secondNamePerson);
+
+	        }
+	        catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+		
+		if(namePerson == null){
+			JOptionPane.showMessageDialog(null, "Неверный логин или пароль", "Ошибка", JOptionPane.INFORMATION_MESSAGE);
+		}
+		else{
+		new Client(lastNamePerson, namePerson, secondNamePerson);
 		System.out.println(login + ", " + password);
+		dispose();
+		}
+		
 	}
 	
 }

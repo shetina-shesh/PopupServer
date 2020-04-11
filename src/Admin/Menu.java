@@ -185,8 +185,6 @@ public class Menu extends JFrame {
         
         
         
-		//contentPane.add(lRoom);
-        
         pMenuRoom = new JPopupMenu();
 		JMenuItem addPerson = new JMenuItem("Добавить пользователя");
 		JMenuItem deleteRoom = new JMenuItem("Удалить комнату");
