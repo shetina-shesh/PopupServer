@@ -3,10 +3,12 @@ package Server;
 public class ServerMain {
 
 	private int port;
+	private Server server;
 	
 	public ServerMain(int port){
 		this.port = port;
-		System.out.println(port);
+		server = new Server(port);
+		//System.out.println(port);
 	}
 	
 	public static void main(String[] args){

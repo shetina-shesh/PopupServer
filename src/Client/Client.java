@@ -48,19 +48,22 @@ public class Client extends JFrame {
 		this.lastNameString = lastName;
 		this.nameString = name;
 		this.secondNameString = secondName;
-		boolean connect = openConnection();
+		boolean connect = openConnection(address);
 		if(!connect){
-			System.err.println("Connection failed!");
-			console("Connection failed!");
+			System.err.println("Соединение разорвано!");
+			console("Соединение разорвано!");
 		}
 		createWindow();
 		console("Добро пожаловать " +lastNameString+" "+nameString+" "+secondNameString+". Выберите пользователя.");
+		//Покаывает подключение рызных пользователей
+		String connection = nameString + "connected from " + address;
+		send(connection.getBytes());
 	}
 	
 	
-	private boolean openConnection(){
+	private boolean openConnection(String address){
 		try {
-			socket = new DatagramSocket(port);
+			socket = new DatagramSocket();
 			ip = InetAddress.getByName(address);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -165,6 +168,7 @@ public class Client extends JFrame {
 		if(message.equals("")) return;
 		message = nameString + ": " + message;
 		console(message);
+		send(message.getBytes());
 		txtSend.setText("");
 	}
 }
