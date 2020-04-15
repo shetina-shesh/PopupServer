@@ -30,6 +30,7 @@ public class Login extends JFrame {
 	private String namePerson;
 	private String secondNamePerson;
 	private String lastNamePerson;
+	private int idPerson;
 
 
 	public static void main(String[] args) {
@@ -106,13 +107,14 @@ public class Login extends JFrame {
 		
 		try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
 
-	    	   String SQL ="SELECT Colloborators.LastName, Colloborators.Name, Colloborators.SecondName, Colloborators.Post, Login.Login, Login.Password FROM Colloborators, Login WHERE Colloborators.ID = Login.ID_L AND Login.Login = '"+login+"' AND Login.Password = '"+password+"'";
+	    	   String SQL ="SELECT Colloborators.ID, Colloborators.LastName, Colloborators.Name, Colloborators.SecondName, Colloborators.Post, Login.Login, Login.Password FROM Colloborators, Login WHERE Colloborators.ID = Login.ID_L AND Login.Login = '"+login+"' AND Login.Password = '"+password+"'";
 	    	   ResultSet rs = stmt.executeQuery(SQL);
 	    	   
 	            while (rs.next()) {	
 	            	namePerson = rs.getString("Name");
 	            	secondNamePerson = rs.getString("SecondName");
-	            	lastNamePerson = rs.getString("LastName");    
+	            	lastNamePerson = rs.getString("LastName"); 
+	            	idPerson = rs.getInt("ID");
 	            }
 	            
 	            System.out.println(lastNamePerson + " " + namePerson + " " + secondNamePerson);
@@ -126,7 +128,7 @@ public class Login extends JFrame {
 			JOptionPane.showMessageDialog(null, "Неверный логин или пароль", "Ошибка", JOptionPane.INFORMATION_MESSAGE);
 		}
 		else{
-		new Client(lastNamePerson, namePerson, secondNamePerson);
+		new Client(lastNamePerson, namePerson, secondNamePerson, idPerson);
 		System.out.println(login + ", " + password);
 		dispose();
 		}

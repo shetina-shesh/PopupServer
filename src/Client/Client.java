@@ -34,6 +34,7 @@ public class Client extends JFrame {
 	private String address = "localhost";
 	private int port = 8192;
 	private String lastNameString, secondNameString, nameString;
+	private Integer idPerson;
 	private JTextField txtSend;
 	private JList lRoom;
 	private JList lPerson;
@@ -44,10 +45,11 @@ public class Client extends JFrame {
 	
 	private Thread send;
 
-	public Client(String lastName, String name, String secondName) {
+	public Client(String lastName, String name, String secondName, Integer idPerson) {
 		this.lastNameString = lastName;
 		this.nameString = name;
 		this.secondNameString = secondName;
+		this.idPerson = idPerson;
 		boolean connect = openConnection(address);
 		if(!connect){
 			System.err.println("Соединение разорвано!");
@@ -56,7 +58,7 @@ public class Client extends JFrame {
 		createWindow();
 		console("Добро пожаловать " +lastNameString+" "+nameString+" "+secondNameString+". Выберите пользователя.");
 		//Покаывает подключение рызных пользователей
-		String connection = nameString + "connected from " + address;
+		String connection = "/c/" + nameString + idPerson;
 		send(connection.getBytes());
 	}
 	
