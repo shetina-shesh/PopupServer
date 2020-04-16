@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-public class Client{
+public class Client {
 
 	private static final long serialVersionUID = 1L;
 
@@ -15,35 +15,36 @@ public class Client{
 	private int port = 8192;
 	private String lastNameString, secondNameString, nameString;
 	private Integer idPerson;
-	
+
 	private DatagramSocket socket;
 	private InetAddress ip;
 	private Thread send;
 
-	public Client(String lastName, String name, String secondName, Integer idPerson){
+	public Client(String lastName, String name, String secondName,
+			Integer idPerson) {
 		this.lastNameString = lastName;
 		this.nameString = name;
 		this.secondNameString = secondName;
 		this.idPerson = idPerson;
 	}
-	
-	public String getLastName(){
+
+	public String getLastName() {
 		return lastNameString;
 	}
-	
-	public String getName(){
+
+	public String getName() {
 		return nameString;
 	}
-	
-	public String getSecondName(){
+
+	public String getSecondName() {
 		return secondNameString;
 	}
-	
-	public Integer getIdPerson(){
+
+	public Integer getIdPerson() {
 		return idPerson;
 	}
-	
-	public boolean openConnection(){
+
+	public boolean openConnection() {
 		try {
 			socket = new DatagramSocket();
 			ip = InetAddress.getByName(address);
@@ -56,11 +57,11 @@ public class Client{
 		}
 		return true;
 	}
-	
-	public String receive(){
+
+	public String receive() {
 		byte[] data = new byte[1024];
 		DatagramPacket packet = new DatagramPacket(data, data.length);
-		
+
 		try {
 			socket.receive(packet);
 		} catch (IOException e) {
@@ -69,11 +70,12 @@ public class Client{
 		String message = new String(packet.getData());
 		return message;
 	}
-	
-	public void send(final byte[] data){
-		send = new Thread("Send"){
-			public void run(){
-				DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
+
+	public void send(final byte[] data) {
+		send = new Thread("Send") {
+			public void run() {
+				DatagramPacket packet = new DatagramPacket(data, data.length,
+						ip, port);
 				try {
 					socket.send(packet);
 				} catch (IOException e) {
@@ -83,6 +85,15 @@ public class Client{
 		};
 		send.start();
 	}
-	
-	
+
+	public void close() {
+		new Thread() {
+			public void run() {
+				synchronized (socket) {
+					socket.close();
+				}
+			}
+		}.start();
+	}
+
 }

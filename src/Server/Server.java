@@ -52,7 +52,6 @@ public class Server implements Runnable {
 		receive = new Thread("Receive"){
 			public void run(){
 				while(running){
-					System.out.println(clients.size());
 					byte[] data = new byte[1024];
 					DatagramPacket packet = new DatagramPacket(data, data.length);
 					try {
@@ -100,15 +99,36 @@ public class Server implements Runnable {
 		if(string.startsWith("/c/")){
 			int id = Integer.parseInt(string.replaceAll("[^0-9]", ""));;
 			System.out.println("ID "+ id);
-			clients.add(new ServerClient(string.substring(3, string.length()), packet.getAddress(), packet.getPort(), id));
+			clients.add(new ServerClient(string.substring(3, string.length()).replaceAll("[^à-ÿ¸À-ß¨]", ""), packet.getAddress(), packet.getPort(), id));
 			System.out.println(string.substring(3, string.length()).replaceAll("[^à-ÿ¸À-ß¨]", ""));
 			String connectionID = "/c/";
 			send(connectionID, packet.getAddress(), packet.getPort());
 		}else if (string.startsWith("/m/")){
 			sendToAll(string);
+		}else if(string.startsWith("/d/")){
+			String id = string.split("/d/|/e/")[1];
+			disconnect(Integer.parseInt(id), true);
 		}else{
 			System.out.println(string);
 		}
+	}
+	
+	private void disconnect(int id, boolean status){
+		ServerClient c = null;
+		for(int i=0; i < clients.size(); i++){
+			if(clients.get(i).getID() == id){
+				c = clients.get(i);
+				clients.remove(i);
+				break;
+			}
+		}
+		String message = "";
+		if(status){
+			message = "Client " + c.name + " (" + c.getID() + ") @ " + c.address.toString() + ":" + c.port + " disconnected.";
+		}else{
+			message = "Client " + c.name + " (" + c.getID() + ") @ " + c.address.toString() + ":" + c.port + " timed out.";
+		}
+		System.out.println(message);
 	}
 	
 }
