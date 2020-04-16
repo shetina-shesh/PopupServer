@@ -52,6 +52,7 @@ public class Server implements Runnable {
 		receive = new Thread("Receive"){
 			public void run(){
 				while(running){
+					System.out.println(clients.size());
 					byte[] data = new byte[1024];
 					DatagramPacket packet = new DatagramPacket(data, data.length);
 					try {
@@ -60,9 +61,6 @@ public class Server implements Runnable {
 						e.printStackTrace();
 					}
 					process(packet);
-					//delete
-					clients.add(new ServerClient("Никита", packet.getAddress(), packet.getPort(), 50));
-					System.out.println(clients.get(0).address.toString() + ":" + clients.get(0).port);
 					
 				}
 			}
@@ -92,6 +90,7 @@ public class Server implements Runnable {
 	}
 	
 	private void send(String message, InetAddress address, int port){
+		message += "/e/";
 		send(message.getBytes(), address, port);
 	}
 	
