@@ -7,7 +7,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Arrays;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -18,13 +20,13 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
 
 public class ClientWindow extends JFrame implements Runnable{
 	private static final long serialVersionUID = 1L;
 	
 	private JPanel contentPane;
 	private JTextField txtSend;
-	private JList lRoom;
 	private JList lPerson;
 	private JTextArea txtHistory;
 	
@@ -33,7 +35,6 @@ public class ClientWindow extends JFrame implements Runnable{
 	private Thread run, listen;
 	
 	private boolean running = false;
-	//private String address = "localhost";
 	
 	public ClientWindow(String lastName, String name, String secondName, Integer idPerson) {
 		client = new Client(lastName, name, secondName, idPerson);
@@ -100,17 +101,16 @@ public class ClientWindow extends JFrame implements Runnable{
 		btnSend.setBounds(661, 409, 97, 25);
 		contentPane.add(btnSend);
 		
-		lRoom = new JList();
-		lRoom.setBounds(12, 65, 202, 327);
-		contentPane.add(lRoom);
-		
 		lPerson = new JList();
-		lPerson.setBounds(241, 23, 407, 29);
+		lPerson.setBounds(12, 65, 202, 327);
 		contentPane.add(lPerson);
+		
+		JLabel lblNewLabel = new JLabel("\u041E\u043D\u043B\u0430\u0439\u043D \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0438:");
+		lblNewLabel.setBounds(12, 41, 191, 16);
+		contentPane.add(lblNewLabel);
 		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e){
-				//System.out.println("Closing");
 				String disconnect = "/d/" + client.getIdPerson() + "/e/";
 				send(disconnect, false);
 				client.close();
@@ -120,7 +120,7 @@ public class ClientWindow extends JFrame implements Runnable{
 		
 		setVisible(true);
 	}
-	
+
 	public void console(String message){
 		txtHistory.append(message + "\n\r");
 	}
@@ -150,6 +150,9 @@ public class ClientWindow extends JFrame implements Runnable{
 						String text = message.substring(3);
 						text = text.split("/e/")[0];
 						console(text);
+					}else if(message.startsWith("/u/")){
+						String[] u = message.split("/u/|/n/|/e/");
+						update(Arrays.copyOfRange(u, 1, u.length - 1));
 					}
 				}
 			}
@@ -157,4 +160,7 @@ public class ClientWindow extends JFrame implements Runnable{
 		listen.start();
 	}
 	
+	public void update(String[] users){
+		lPerson.setListData(users);
+	}
 }
