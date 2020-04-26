@@ -150,44 +150,113 @@ public class Server implements Runnable {
 		} else if (string.startsWith("/id/")) {
 
 			String fileName = string.split("/id/|/e/")[1];
-			file = new File("C:\\EclipseProjects\\PopupMenu\\src\\Server\\ServerUser\\" + fileName + ".txt");
 			String idClient = fileName.split("_")[0];
-			System.out.println("Имя файла пришло - " + fileName);
-			//fileName = "/id/" + fileName;
+			String idSecondClient = fileName.split("_")[1];
+			String FileNameAnother = idSecondClient + "_" + idClient;
+			if (fileName.split("_")[1].equals("Общий чат")) {
+				file = new File("C:\\EclipseProjects\\PopupMenu\\src\\Server\\ServerUser\\"+ fileName.split("_")[1] + ".txt");
+				System.out.println("Имя файла пришло - "+ fileName.split("_")[1]);
+				if (file.exists()) {
+					System.out.println("File confirm");
+					try {
+						BufferedReader bfreader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+						// ArrayList<String> textFile = new ArrayList<String>();
+						String str;
 
-			if (file.exists()) {
-				System.out.println("File confirm");
-				try {
-					BufferedReader bfreader = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
-					// ArrayList<String> textFile = new ArrayList<String>();
-					String str;
+						while ((str = bfreader.readLine()) != null) {
+							System.out.println(str + "\n");
+							str = "/id/" + str;
+							// каждому пользователю свой файл отправляется
+							for (int i = 0; i < clients.size(); i++) {
+								ServerClient client = clients.get(i);
+								if (clients.get(i).getID() == Integer.parseInt(idClient)) {
+									send(str.getBytes(), client.address,client.port);
+								}
 
-					while ((str = bfreader.readLine()) != null) {
-						System.out.println(str + "\n");
-						str = "/m/" + str;
-						//каждому пользователю свой файл отправляется
-						for (int i = 0; i < clients.size(); i++) {
-						ServerClient client = clients.get(i);
-						if (clients.get(i).getID() == Integer.parseInt(idClient)) {
-							send(str.getBytes(), client.address, client.port);
+							}
 						}
-		
+						bfreader.close();
+					} catch (Exception e) {
+						System.out.println(e.getMessage());
 					}
-					}
-					bfreader.close();
-				} catch (Exception e) {
-					System.out.println(e.getMessage());
 				}
 			} else {
-				try {
-					boolean created = file.createNewFile();
-					if (created) {
-						// txtHistory.setText("");
-						System.out.println("file created");
+				File folder = new File("C:\\EclipseProjects\\PopupMenu\\src\\Server\\ServerUser\\");
+				File[] folderEntries = folder.listFiles();
+				boolean doFile = false;
+				for (File entry : folderEntries) {
+					if (entry.isFile()) {
+						if (entry.getName().equals(fileName + ".txt")) {
+							System.out.println("File confirm 1");
+							try {
+								BufferedReader bfreader = new BufferedReader(new InputStreamReader(new FileInputStream(entry),"UTF-8"));
+								// ArrayList<String> textFile = new
+								// ArrayList<String>();
+								String str;
+
+								while ((str = bfreader.readLine()) != null) {
+									System.out.println(str + "\n");
+									str = "/id/" + str;
+									// каждому пользователю свой файл
+									// отправляется
+									for (int i = 0; i < clients.size(); i++) {
+										ServerClient client = clients.get(i);
+										if (clients.get(i).getID() == Integer.parseInt(idClient)) {
+											send(str.getBytes(),client.address, client.port);
+										}
+
+									}
+								}
+								bfreader.close();
+							} catch (Exception e) {
+								System.out.println(e.getMessage());
+							}
+							doFile = true;
+							break;
+						} else if (entry.getName().equals(FileNameAnother + ".txt")) {
+							System.out.println("File confirm 2");
+							try {
+								BufferedReader bfreader = new BufferedReader(new InputStreamReader(new FileInputStream(entry),"UTF-8"));
+								String str;
+
+								while ((str = bfreader.readLine()) != null) {
+									System.out.println(str + "\n");
+									str = "/id/" + str;
+									for (int i = 0; i < clients.size(); i++) {
+										ServerClient client = clients.get(i);
+										if (clients.get(i).getID() == Integer.parseInt(idClient)) {
+											send(str.getBytes(),client.address, client.port);
+										}
+
+									}
+								}
+								bfreader.close();
+							} catch (Exception e) {
+								System.out.println(e.getMessage());
+							}
+							doFile = true;
+							break;
+						}
 					}
-				} catch (IOException e1) {
-					e1.printStackTrace();
+
 				}
+				if (doFile == false) {
+					File file2 = new File("C:\\EclipseProjects\\PopupMenu\\src\\Server\\ServerUser\\" + fileName + ".txt");
+					if(file2.exists()){
+						System.out.println("file enabled");
+					}else{
+					try {
+						boolean created = file2.createNewFile();
+						if (created) {
+							System.out.println("file created");
+						}
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+
+				}
+
+			}
 			}
 
 		} else {

@@ -189,6 +189,7 @@ public class ClientWindow extends JFrame implements Runnable{
 				}else if(e.getButton() == 1 && e.getClickCount() == 2){
 					int select = tabbedPane.getSelectedIndex();
 					String string = tabbedPane.getTitleAt(select);
+					txtHistory.setText("");
 					//System.out.println(string);
 					for(Map.Entry<String, String> entry: hashMapUsers.entrySet()){
 						if(entry.getValue().equals(string)){
@@ -204,6 +205,8 @@ public class ClientWindow extends JFrame implements Runnable{
 					
 					if(select == 0){
 						// Выбор вкладки общий чат
+						String GeneralChat = "/id/"+client.getIdPerson()+"_Общий чат/e/";
+						sendFile(GeneralChat);
 						System.out.println("Ziro");
 					}
 				}
@@ -262,9 +265,9 @@ public class ClientWindow extends JFrame implements Runnable{
 					String message = client.receive();
 					if(message.startsWith("/c/")){
 					console("Успешное подключение к серверу. ID: " + client.getIdPerson());
-//					}else if(message.startsWith("/id/")){
-//						String text = message.substring(4);
-//						fileHistory(text);
+					}else if(message.startsWith("/id/")){
+						String text = message.substring(4);
+						fileHistory(text);
 					}else if(message.startsWith("/m/")){
 						String text = message.substring(3);
 						text = text.split("/e/")[0];
