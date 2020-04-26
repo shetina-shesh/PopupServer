@@ -137,6 +137,11 @@ public class ClientWindow extends JFrame implements Runnable{
 		tabbedPane.setBounds(241, 41, 500, 22);
 		contentPane.add(tabbedPane);
 		
+		JLabel lblProfile = new JLabel("\u0412\u044B \u0432\u043E\u0448\u043B\u0438 \u043A\u0430\u043A:");
+		lblProfile.setText("Вы вошли как - "+client.getLastName()+" "+client.getName()+" "+client.getSecondName()+". Выберите пользователя.");
+		lblProfile.setBounds(12, 12, 729, 16);
+		contentPane.add(lblProfile);
+		
 		final JPopupMenu pMenuPerson = new JPopupMenu();
 		JMenuItem addPerson = new JMenuItem("Написать");
 		pMenuPerson.add(addPerson);
