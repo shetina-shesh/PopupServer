@@ -116,6 +116,7 @@ public class ClientWindow extends JFrame implements Runnable{
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				send(txtSend.getText(), true);
+				
 			}
 		});
 		btnSend.setBounds(661, 409, 97, 25);
@@ -131,7 +132,7 @@ public class ClientWindow extends JFrame implements Runnable{
 		lblNewLabel.setBounds(12, 41, 191, 16);
 		contentPane.add(lblNewLabel);
 		
-		final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.SCROLL_TAB_LAYOUT);
+		tabbedPane = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.SCROLL_TAB_LAYOUT);
 		tabbedPane.add(null, "Общий чат");
 		tabbedPane.setBounds(241, 41, 500, 22);
 		contentPane.add(tabbedPane);
@@ -190,17 +191,14 @@ public class ClientWindow extends JFrame implements Runnable{
 					int select = tabbedPane.getSelectedIndex();
 					String string = tabbedPane.getTitleAt(select);
 					txtHistory.setText("");
-					//System.out.println(string);
 					for(Map.Entry<String, String> entry: hashMapUsers.entrySet()){
 						if(entry.getValue().equals(string)){
 							String nameFile = "/id/";
 							nameFile += client.getIdPerson() + "_" +entry.getKey() + "/e/";
 							sendFile(nameFile);
-							//System.out.println("ID выбранного пользователя = " + entry.getKey());
-							//System.out.println(nameFile);
 						}
 						
-						//client.send(message.getBytes());
+						
 					}
 					
 					if(select == 0){
@@ -240,7 +238,6 @@ public class ClientWindow extends JFrame implements Runnable{
 	}
 	
 	public void fileHistory(String message){
-		//txtHistory.setText("");
 		txtHistory.append(message + "\n\r");
 	}
 	
@@ -250,10 +247,30 @@ public class ClientWindow extends JFrame implements Runnable{
 	
 	public void send(String message, boolean text){
 		if(message.equals("")) return;
+		
 		if(text){
 			message = client.getLastName() + " " +client.getName() + ": " + message;
-			message = "/m/" + message;
+			message = "/f/" + message + "/e//id/"+client.getIdPerson()+"_";
+			
+			if(tabbedPane.getSelectedIndex() == 0){
+				// Выбор вкладки общий чат
+				message = message + "Общий чат/e2/";
+				System.out.println("Ziro");
+			}else{
+			
+			String string = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
+			for(Map.Entry<String, String> entry: hashMapUsers.entrySet()){
+				if(entry.getValue().equals(string)){
+					message = message + entry.getKey()+"/e2/";
+				}
+				
+				
+			}
 		}
+			
+			
+		}
+		
 		client.send(message.getBytes());
 		txtSend.setText("");
 	}
@@ -268,10 +285,29 @@ public class ClientWindow extends JFrame implements Runnable{
 					}else if(message.startsWith("/id/")){
 						String text = message.substring(4);
 						fileHistory(text);
+					}else if(message.startsWith("/p/")){
+						String pMessage = message.substring(3);
+						console(pMessage.split("/e/")[0]);
 					}else if(message.startsWith("/m/")){
-						String text = message.substring(3);
-						text = text.split("/e/")[0];
-						console(text);
+						String messageFromClient = message.split("/m/|/e/")[1];
+						String idClientMessage = message.split("/e/|/e2/")[1];
+						String tabClient = null;
+						
+						for(Map.Entry<String, String> entry: hashMapUsers.entrySet()){
+							if(entry.getKey().equals(idClientMessage)){
+								tabClient = entry.getValue();
+							}
+						}	
+						String string = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
+						if(string.equals(idClientMessage)){
+							console(messageFromClient);
+						}else if(string.equals(tabClient)){
+							if(client.getIdPerson() == Integer.parseInt(idClientMessage)){
+								System.out.println("Сам себе пишет хах");
+							}else{
+							console(messageFromClient);
+							}
+						}
 					}else if(message.startsWith("/u/")){
 						//////////////////////////////////////////
 						String[] u = message.split("/u/|/n/|/e/");
@@ -280,9 +316,6 @@ public class ClientWindow extends JFrame implements Runnable{
 						for(int i=0; i<u.length; i++){
 							hashMapUsers.put(u[i].replaceAll("[^0-9]", ""), u[i].replaceAll("[^а-яёА-ЯЁ ]", ""));
 						}
-						
-//						for(Map.Entry<String, String> entry: hashMapUsers.entrySet())
-//				            System.out.println(entry.getKey() + " - " + entry.getValue());
 						
 						String[] mas = new String[u.length];
 						

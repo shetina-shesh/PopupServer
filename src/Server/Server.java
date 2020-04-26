@@ -1,12 +1,17 @@
 package Server;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -128,8 +133,7 @@ public class Server implements Runnable {
 
 	private void process(DatagramPacket packet) {
 		// String string = new String(packet.getData());
-		String string = new String(packet.getData(), packet.getOffset(),
-				packet.getLength());
+		String string = new String(packet.getData(), packet.getOffset(),packet.getLength());
 		if (string.startsWith("/c/")) {
 
 			String[] users = string.split("/c/|/n/|/e/");
@@ -142,8 +146,104 @@ public class Server implements Runnable {
 			String connectionID = "/c/";
 			send(connectionID, packet.getAddress(), packet.getPort());
 
-		} else if (string.startsWith("/m/")) {
-			sendToAll(string);
+		} else if (string.startsWith("/f/")) {
+			
+			String message = string.split("/f/|/e/")[1];
+			String fileName = string.split("/id/|/e2/")[1];
+			String idClient = fileName.split("_")[0];
+			String idSecondClient = fileName.split("_")[1];
+			String FileNameAnother = idSecondClient + "_" + idClient;
+			
+			
+			
+			File folder = new File("C:\\EclipseProjects\\PopupMenu\\src\\Server\\ServerUser\\");
+			File[] folderEntries = folder.listFiles();
+			for (File entry : folderEntries) {
+				if (entry.isFile()) {
+					if (entry.getName().equals(fileName + ".txt")) {
+						System.out.println("File confirm 1");
+						
+						//записать в файл
+						try {
+							OutputStream outputStream = new FileOutputStream(entry, true);
+							OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
+							outputStreamWriter.write(message + "\n");
+							outputStreamWriter.flush();
+							outputStreamWriter.close();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						
+						
+						String str = "/m/" + message +"/e/"+idClient+"/e2/";
+						// каждому пользователю свой файл отправляется
+						for (int i = 0; i < clients.size(); i++) {
+							ServerClient client = clients.get(i);
+							if (clients.get(i).getID() == Integer.parseInt(idSecondClient)) {
+								send(str.getBytes(), client.address,client.port);
+							}
+							if(clients.get(i).getID() == Integer.parseInt(idClient)){
+								send(("/p/"+message), client.address,client.port);
+							}
+
+						}
+						
+					} else if (entry.getName().equals(FileNameAnother + ".txt")) {
+						System.out.println("File confirm 2");
+						
+						//записать в файл
+						try {
+							OutputStream outputStream = new FileOutputStream(entry, true);
+							OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
+							outputStreamWriter.write(message + "\n");
+							outputStreamWriter.flush();
+							outputStreamWriter.close();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						
+						String str = "/m/" + message +"/e/"+idClient+"/e2/";
+						// каждому пользователю свой файл отправляется
+						for (int i = 0; i < clients.size(); i++) {
+							ServerClient client = clients.get(i);
+							if (clients.get(i).getID() == Integer.parseInt(idSecondClient)) {
+								send(str.getBytes(), client.address,client.port);
+							}
+							if(clients.get(i).getID() == Integer.parseInt(idClient)){
+								send(("/p/"+message).getBytes(), client.address,client.port);
+							}
+
+						}
+					}else if(entry.getName().equals(idSecondClient + ".txt")){
+						//записать в файл
+						try {
+							OutputStream outputStream = new FileOutputStream(entry, true);
+							OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
+							outputStreamWriter.write(message + "\n");
+							outputStreamWriter.flush();
+							outputStreamWriter.close();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						sendToAll("/m/" + message + "/e/"+idSecondClient+"/e2/");
+					}
+				}
+
+			}
+			
+			
 		} else if (string.startsWith("/d/")) {
 			String id = string.split("/d/|/e/")[1];
 			disconnect(Integer.parseInt(id), true);
@@ -160,7 +260,6 @@ public class Server implements Runnable {
 					System.out.println("File confirm");
 					try {
 						BufferedReader bfreader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
-						// ArrayList<String> textFile = new ArrayList<String>();
 						String str;
 
 						while ((str = bfreader.readLine()) != null) {
@@ -190,15 +289,12 @@ public class Server implements Runnable {
 							System.out.println("File confirm 1");
 							try {
 								BufferedReader bfreader = new BufferedReader(new InputStreamReader(new FileInputStream(entry),"UTF-8"));
-								// ArrayList<String> textFile = new
-								// ArrayList<String>();
 								String str;
 
 								while ((str = bfreader.readLine()) != null) {
 									System.out.println(str + "\n");
 									str = "/id/" + str;
-									// каждому пользователю свой файл
-									// отправляется
+									// каждому пользователю свой файл отправляется
 									for (int i = 0; i < clients.size(); i++) {
 										ServerClient client = clients.get(i);
 										if (clients.get(i).getID() == Integer.parseInt(idClient)) {
