@@ -1,13 +1,18 @@
 package Server;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class Server implements Runnable {
 
@@ -17,6 +22,8 @@ public class Server implements Runnable {
 	private int port;
 	private boolean running = false;
 	private Thread run, manage, send, receive;
+	private static File directory;
+	private File file;
 
 	public Server(int port) {
 		this.port = port;
@@ -37,20 +44,23 @@ public class Server implements Runnable {
 		receive();
 	}
 
-	
 	private void sendStatus() {
 		if (clients.size() <= 0) {
 			return;
 		} else {
 			String users = "/u/";
 			for (int i = 0; i < clients.size() - 1; i++) {
-				users += clients.get(i).name + "/n/";
+				users += clients.get(i).lastName + " " + clients.get(i).name
+						+ " " + clients.get(i).secondName + clients.get(i).ID
+						+ "/n/";
 			}
-			users += clients.get(clients.size() - 1).name + "/e/";
+			users += clients.get(clients.size() - 1).lastName + " "
+					+ clients.get(clients.size() - 1).name + " "
+					+ clients.get(clients.size() - 1).secondName
+					+ clients.get(clients.size() - 1).ID + "/e/";
 			sendToAll(users);
 		}
 	}
-	
 
 	private void manageClients() {
 		manage = new Thread("Manage") {
@@ -121,21 +131,65 @@ public class Server implements Runnable {
 		String string = new String(packet.getData(), packet.getOffset(),
 				packet.getLength());
 		if (string.startsWith("/c/")) {
+
+			String[] users = string.split("/c/|/n/|/e/");
+
 			int id = Integer.parseInt(string.replaceAll("[^0-9]", ""));
-			;
 			System.out.println("ID " + id);
-			clients.add(new ServerClient(string.substring(3, string.length())
-					.replaceAll("[^а-яёА-ЯЁ]", ""), packet.getAddress(), packet
-					.getPort(), id));
-			System.out.println(string.substring(3, string.length()).replaceAll(
-					"[^а-яёА-ЯЁ]", ""));
+			clients.add(new ServerClient(users[1], users[2], users[3], packet
+					.getAddress(), packet.getPort(), id));
+			System.out.println(users[1] + users[2] + users[3]);
 			String connectionID = "/c/";
 			send(connectionID, packet.getAddress(), packet.getPort());
+
 		} else if (string.startsWith("/m/")) {
 			sendToAll(string);
 		} else if (string.startsWith("/d/")) {
 			String id = string.split("/d/|/e/")[1];
 			disconnect(Integer.parseInt(id), true);
+		} else if (string.startsWith("/id/")) {
+
+			String fileName = string.split("/id/|/e/")[1];
+			file = new File("C:\\EclipseProjects\\PopupMenu\\src\\Server\\ServerUser\\" + fileName + ".txt");
+			String idClient = fileName.split("_")[0];
+			System.out.println("Имя файла пришло - " + fileName);
+			//fileName = "/id/" + fileName;
+
+			if (file.exists()) {
+				System.out.println("File confirm");
+				try {
+					BufferedReader bfreader = new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
+					// ArrayList<String> textFile = new ArrayList<String>();
+					String str;
+
+					while ((str = bfreader.readLine()) != null) {
+						System.out.println(str + "\n");
+						str = "/m/" + str;
+						//каждому пользователю свой файл отправляется
+						for (int i = 0; i < clients.size(); i++) {
+						ServerClient client = clients.get(i);
+						if (clients.get(i).getID() == Integer.parseInt(idClient)) {
+							send(str.getBytes(), client.address, client.port);
+						}
+		
+					}
+					}
+					bfreader.close();
+				} catch (Exception e) {
+					System.out.println(e.getMessage());
+				}
+			} else {
+				try {
+					boolean created = file.createNewFile();
+					if (created) {
+						// txtHistory.setText("");
+						System.out.println("file created");
+					}
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+
 		} else {
 			System.out.println(string);
 		}
