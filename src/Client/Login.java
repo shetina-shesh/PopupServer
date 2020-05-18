@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.management.loading.PrivateClassLoader;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -29,6 +30,7 @@ public class Login extends JFrame {
 	private String secondNamePerson;
 	private String lastNamePerson;
 	private int idPerson;
+	private String post;
 
 
 	public static void main(String[] args) {
@@ -55,14 +57,14 @@ public class Login extends JFrame {
 		
 		setTitle("\u0410\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(425, 479);
+		setSize(429, 252);
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JButton btnConnect = new JButton("Connect");
+		JButton btnConnect = new JButton("\u0412\u043E\u0439\u0442\u0438");
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String textLogin = txtLogin.getText();
@@ -70,25 +72,25 @@ public class Login extends JFrame {
 				login(textLogin, textPassword);
 			}
 		});
-		btnConnect.setBounds(155, 365, 97, 25);
+		btnConnect.setBounds(154, 157, 97, 25);
 		contentPane.add(btnConnect);
 		
 		txtLogin = new JTextField();
-		txtLogin.setBounds(122, 157, 163, 22);
+		txtLogin.setBounds(121, 58, 163, 22);
 		contentPane.add(txtLogin);
 		txtLogin.setColumns(10);
 		
 		txtPassword = new JTextField();
-		txtPassword.setBounds(122, 254, 163, 22);
+		txtPassword.setBounds(121, 122, 163, 22);
 		contentPane.add(txtPassword);
 		txtPassword.setColumns(10);
 		
-		JLabel lblLogin = new JLabel("Login");
-		lblLogin.setBounds(175, 128, 56, 16);
+		JLabel lblLogin = new JLabel("\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043B\u043E\u0433\u0438\u043D");
+		lblLogin.setBounds(147, 29, 110, 16);
 		contentPane.add(lblLogin);
 		
-		JLabel lblPassword = new JLabel("Password");
-		lblPassword.setBounds(155, 220, 97, 16);
+		JLabel lblPassword = new JLabel("\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u043F\u0430\u0440\u043E\u043B\u044C");
+		lblPassword.setBounds(155, 93, 97, 16);
 		contentPane.add(lblPassword);
 	}
 	
@@ -113,6 +115,7 @@ public class Login extends JFrame {
 	            	secondNamePerson = rs.getString("SecondName");
 	            	lastNamePerson = rs.getString("LastName"); 
 	            	idPerson = rs.getInt("ID");
+	            	post = rs.getString("Post");
 	            }
 	            
 	            System.out.println(lastNamePerson + " " + namePerson + " " + secondNamePerson);
@@ -126,7 +129,7 @@ public class Login extends JFrame {
 			JOptionPane.showMessageDialog(null, "Неверный логин или пароль", "Ошибка", JOptionPane.INFORMATION_MESSAGE);
 		}
 		else{
-		new ClientWindow(lastNamePerson, namePerson, secondNamePerson, idPerson);
+		new ClientWindow(lastNamePerson, namePerson, secondNamePerson, idPerson, post);
 		System.out.println(login + ", " + password);
 		dispose();
 		}

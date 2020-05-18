@@ -58,17 +58,17 @@ public class ClientWindow extends JFrame implements Runnable{
 	private JTabbedPane tabbedPane;
 	private HashMap<String, String> hashMapUsers;
 	
-	public ClientWindow(String lastName, String name, String secondName, Integer idPerson) {
-		client = new Client(lastName, name, secondName, idPerson);
+	public ClientWindow(String lastName, String name, String secondName, Integer idPerson, String post) {
+		client = new Client(lastName, name, secondName, idPerson, post);
 		boolean connect = client.openConnection();
 		if(!connect){
 			System.err.println("Соединение разорвано!");
 			console("Соединение разорвано!");
 		}
 		createWindow();
-		console("Добро пожаловать " +client.getLastName()+" "+client.getName()+" "+client.getSecondName()+". Выберите пользователя.");
+		console("Добро пожаловать " +client.getLastName()+" "+client.getName()+" "+client.getSecondName()+". \nВыберите пользователя.");
 		//Покаывает подключение рызных пользователей
-		String connection = "/c/" + client.getLastName() + "/n/" + client.getName() + "/n/" + client.getSecondName() + "/n/" + client.getIdPerson() + "/e/";
+		String connection = "/c/" + client.getLastName() + "/n/" + client.getName() + "/n/" + client.getSecondName() + "/n/" + client.getIdPerson() + "/n/"+client.getPost() + "/e/";
 		client.send(connection.getBytes());
 		running = true;
 		run = new Thread(this, "Running");
@@ -83,9 +83,9 @@ public class ClientWindow extends JFrame implements Runnable{
 			e1.printStackTrace();
 		} 
 		
-		setTitle("Chat");
+		setTitle("\u041A\u043E\u0440\u043F\u043E\u0440\u0430\u0442\u0438\u0432\u043D\u044B\u0439 \u0447\u0430\u0442");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(800, 480);
+		setSize(932, 560);
 		setLocationRelativeTo(null);
 		setResizable(false);
 		contentPane = new JPanel();
@@ -96,7 +96,7 @@ public class ClientWindow extends JFrame implements Runnable{
 		txtHistory = new JTextArea();
 		txtHistory.setFont(new Font("Monospaced", Font.PLAIN, 16));
 		JScrollPane scroll = new JScrollPane(txtHistory);
-		scroll.setBounds(241, 65, 500, 327);
+		scroll.setBounds(316, 121, 598, 354);
 		scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		contentPane.add(scroll);
 		
@@ -108,39 +108,44 @@ public class ClientWindow extends JFrame implements Runnable{
 				}
 			}
 		});
-		txtSend.setBounds(238, 410, 410, 22);
+		txtSend.setBounds(316, 488, 489, 22);
 		contentPane.add(txtSend);
 		txtSend.setColumns(10);
 		
-		JButton btnSend = new JButton("Send");
+		JButton btnSend = new JButton("\u041E\u0442\u043F\u0440\u0430\u0432\u0438\u0442\u044C");
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				send(txtSend.getText(), true);
 				
 			}
 		});
-		btnSend.setBounds(661, 409, 97, 25);
+		btnSend.setBounds(817, 487, 97, 25);
 		contentPane.add(btnSend);
 		
 		lPerson = new JList();
 		lPerson.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lPerson.setBounds(12, 65, 202, 327);
+		lPerson.setBounds(12, 97, 295, 415);
 		lPerson.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		contentPane.add(lPerson);
 		
 		JLabel lblNewLabel = new JLabel("\u041E\u043D\u043B\u0430\u0439\u043D \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0438:");
-		lblNewLabel.setBounds(12, 41, 191, 16);
+		lblNewLabel.setBounds(12, 68, 191, 16);
 		contentPane.add(lblNewLabel);
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.SCROLL_TAB_LAYOUT);
 		tabbedPane.add(null, "Общий чат");
-		tabbedPane.setBounds(241, 41, 500, 22);
+		tabbedPane.setBounds(316, 97, 598, 22);
 		contentPane.add(tabbedPane);
 		
 		JLabel lblProfile = new JLabel("\u0412\u044B \u0432\u043E\u0448\u043B\u0438 \u043A\u0430\u043A:");
 		lblProfile.setText("Вы вошли как - "+client.getLastName()+" "+client.getName()+" "+client.getSecondName()+". Выберите пользователя.");
 		lblProfile.setBounds(12, 12, 729, 16);
 		contentPane.add(lblProfile);
+		
+		JLabel lblPost = new JLabel("New label");
+		lblPost.setText("Ваша должность: " + client.getPost());
+		lblPost.setBounds(12, 39, 772, 16);
+		contentPane.add(lblPost);
 		
 		final JPopupMenu pMenuPerson = new JPopupMenu();
 		JMenuItem addPerson = new JMenuItem("Написать");
@@ -156,7 +161,9 @@ public class ClientWindow extends JFrame implements Runnable{
 		lPerson.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getButton() == 1 && e.getClickCount() == 2) {
-					tabbedPane.add(null, lPerson.getSelectedValue());
+					String namePersonTabbedPane = (String)lPerson.getSelectedValue();
+					tabbedPane.add(null, namePersonTabbedPane);
+					//namePersonTabbedPane.split("-")[0]
 				} else if (SwingUtilities.isRightMouseButton(e)
 						&& !lPerson.isSelectionEmpty()
 						&& lPerson.locationToIndex(e.getPoint()) == lPerson.getSelectedIndex()) {
@@ -286,7 +293,8 @@ public class ClientWindow extends JFrame implements Runnable{
 				while(running){
 					String message = client.receive();
 					if(message.startsWith("/c/")){
-					console("Успешное подключение к серверу. ID: " + client.getIdPerson());
+					//console("Успешное подключение к серверу. ID: " + client.getIdPerson());
+					console("Успешное подключение к серверу.");
 					}else if(message.startsWith("/id/")){
 						String text = message.substring(4);
 						fileHistory(text);
@@ -319,13 +327,13 @@ public class ClientWindow extends JFrame implements Runnable{
 						hashMapUsers = new HashMap<String, String>();
 						
 						for(int i=0; i<u.length; i++){
-							hashMapUsers.put(u[i].replaceAll("[^0-9]", ""), u[i].replaceAll("[^а-яёА-ЯЁ ]", ""));
+							hashMapUsers.put(u[i].replaceAll("[^0-9]", ""), u[i].replaceAll("[^а-яёА-ЯЁ -]", ""));
 						}
 						
 						String[] mas = new String[u.length];
 						
 						for(int i=0; i<u.length; i++){
-							mas[i] = u[i].replaceAll("[^а-яёА-ЯЁ ]", "");
+							mas[i] = u[i].replaceAll("[^а-яёА-ЯЁ -]", "");
 						}
 						
 						update(Arrays.copyOfRange(mas, 1, mas.length - 1));

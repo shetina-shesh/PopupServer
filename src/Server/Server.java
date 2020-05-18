@@ -56,13 +56,13 @@ public class Server implements Runnable {
 			String users = "/u/";
 			for (int i = 0; i < clients.size() - 1; i++) {
 				users += clients.get(i).lastName + " " + clients.get(i).name
-						+ " " + clients.get(i).secondName + clients.get(i).ID
+						+ " " + clients.get(i).secondName + clients.get(i).ID +" - "+clients.get(i).post
 						+ "/n/";
 			}
 			users += clients.get(clients.size() - 1).lastName + " "
 					+ clients.get(clients.size() - 1).name + " "
 					+ clients.get(clients.size() - 1).secondName
-					+ clients.get(clients.size() - 1).ID + "/e/";
+					+ clients.get(clients.size() - 1).ID + " - "+clients.get(clients.size() - 1).post+"/e/";
 			sendToAll(users);
 		}
 	}
@@ -141,7 +141,7 @@ public class Server implements Runnable {
 			int id = Integer.parseInt(string.replaceAll("[^0-9]", ""));
 			System.out.println("ID " + id);
 			clients.add(new ServerClient(users[1], users[2], users[3], packet
-					.getAddress(), packet.getPort(), id));
+					.getAddress(), packet.getPort(), id, users[5]));
 			System.out.println(users[1] + users[2] + users[3]);
 			String connectionID = "/c/";
 			send(connectionID, packet.getAddress(), packet.getPort());

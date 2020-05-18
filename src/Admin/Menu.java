@@ -646,9 +646,7 @@ public class Menu extends JFrame {
 
 					            // Iterate through the data in the result set and display it.
 					            while (rs.next()) {	
-					            	//room.add(rs.getString("RoomNumber"));
 					            	listModelRoom.addElement(rs.getString("RoomNumber"));
-					            	//System.out.println(rs.getString("RoomNumber"));
 		      
 					            }
 					                

@@ -13,21 +13,25 @@ public class Client {
 
 	private String address = "localhost";
 	private int port = 8192;
-	private String lastNameString, secondNameString, nameString;
+	private String lastNameString, secondNameString, nameString, post;
 	private Integer idPerson;
 
 	private DatagramSocket socket;
 	private InetAddress ip;
 	private Thread send;
 
-	public Client(String lastName, String name, String secondName,
-			Integer idPerson) {
+	public Client(String lastName, String name, String secondName, Integer idPerson, String post) {
 		this.lastNameString = lastName;
 		this.nameString = name;
 		this.secondNameString = secondName;
 		this.idPerson = idPerson;
+		this.post = post;
 	}
 
+	public String getPost(){
+		return post;
+	}
+	
 	public String getLastName() {
 		return lastNameString;
 	}
