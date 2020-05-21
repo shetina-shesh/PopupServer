@@ -45,7 +45,7 @@ public class Server implements Runnable {
 	public void run() {
 		running = true;
 		System.out.println("Сервер запущен на порту: " + port);
-		manageClients();
+		//manageClients();
 		receive();
 	}
 
@@ -55,14 +55,10 @@ public class Server implements Runnable {
 		} else {
 			String users = "/u/";
 			for (int i = 0; i < clients.size() - 1; i++) {
-				//clients.get(i).room + " - " + 
 				users += clients.get(i).ID + "/i/" + clients.get(i).room + " - " + clients.get(i).lastName + " " + clients.get(i).name + " "
 				+ clients.get(i).secondName + " - "+clients.get(i).post
 				+ "/n/";
 				
-				//users += clients.get(i).lastName + " " + clients.get(i).name
-				//		+ " " + clients.get(i).secondName + clients.get(i).ID +" - "+clients.get(i).post
-				//		+ "/n/";
 			}
 			users += clients.get(clients.size() - 1).ID + "/i/" 
 					+clients.get(clients.size() - 1).room + " - "
@@ -142,7 +138,6 @@ public class Server implements Runnable {
 		// String string = new String(packet.getData());
 		String string = new String(packet.getData(), packet.getOffset(),packet.getLength());
 		if (string.startsWith("/c/")) {
-
 			String[] users = string.split("/c/|/n/|/e/");
 
 			int id = Integer.parseInt(users[4]);
@@ -151,6 +146,7 @@ public class Server implements Runnable {
 			System.out.println(users[1] + users[2] + users[3] + " - " + users[6]);
 			String connectionID = "/c/";
 			send(connectionID, packet.getAddress(), packet.getPort());
+			sendStatus();
 
 		} else if (string.startsWith("/f/")) {
 			
@@ -253,6 +249,7 @@ public class Server implements Runnable {
 		} else if (string.startsWith("/d/")) {
 			String id = string.split("/d/|/e/")[1];
 			disconnect(Integer.parseInt(id), true);
+			sendStatus();
 		} else if (string.startsWith("/id/")) {
 
 			String fileName = string.split("/id/|/e/")[1];

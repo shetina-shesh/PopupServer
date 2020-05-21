@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.print.attribute.HashAttributeSet;
 import javax.swing.DefaultListModel;
@@ -41,6 +42,8 @@ import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 
 import org.omg.CORBA.PUBLIC_MEMBER;
+import java.awt.TextField;
+import java.awt.Button;
 
 public class ClientWindow extends JFrame implements Runnable{
 	private static final long serialVersionUID = 1L;
@@ -130,7 +133,7 @@ public class ClientWindow extends JFrame implements Runnable{
 		
 		JLabel lblNewLabel = new JLabel("\u041E\u043D\u043B\u0430\u0439\u043D \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0438:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblNewLabel.setBounds(12, 142, 191, 16);
+		lblNewLabel.setBounds(12, 123, 191, 16);
 		contentPane.add(lblNewLabel);
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -172,6 +175,14 @@ public class ClientWindow extends JFrame implements Runnable{
 		lblNewLabel_4.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lblNewLabel_4.setBounds(12, 92, 237, 37);
 		contentPane.add(lblNewLabel_4);
+		
+		TextField textField = new TextField();
+		textField.setBounds(12, 145, 295, 24);
+		contentPane.add(textField);
+		
+		Button button = new Button("O");
+		button.setBounds(316, 145, 26, 24);
+		contentPane.add(button);
 		
 		final JPopupMenu pMenuPerson = new JPopupMenu();
 		JMenuItem addPerson = new JMenuItem("Написать");
@@ -360,20 +371,27 @@ public class ClientWindow extends JFrame implements Runnable{
 						
 						for(int i=1; i<u.length - 1; i++){
 							System.out.println(i + " element - " + u[i] + "\n" + "id - "+u[i].split("/i/")[0] + "\n" + "room - "+u[i].split("/i/")[1]);
-							
 							hashMapUsers.put(u[i].split("/i/")[0], u[i].split("/i/")[1]);
 							
 						}
 						
 						String[] mas = new String[u.length];
 						
-						for(int i=1; i<u.length - 1; i++){
-
-							mas[i] = u[i].split("/i/")[1];
-							
-						}
+						HashMap<String, String> sortedMap = new HashMap<String, String>();
+											
+						for(Entry<String, String> entry: hashMapUsers.entrySet()) {	
+							  sortedMap.put(entry.getValue().replaceAll("[^0-9]", ""), entry.getValue().replaceAll("[^а-я,А-Я -]", ""));
+							}
 						
-						update(Arrays.copyOfRange(mas, 1, mas.length - 1));
+						sortedMap.entrySet().stream().sorted(Map.Entry.<String, String>comparingByKey());
+						
+						int i=0;
+						for(Entry<String, String> entry: sortedMap.entrySet()) {	
+							  mas[i] = entry.getKey() + entry.getValue();
+							  i++;
+							}
+						
+						update(Arrays.copyOfRange(mas, 0, mas.length));
 					}
 				}
 			}
