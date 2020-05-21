@@ -31,7 +31,7 @@ public class Login extends JFrame {
 	private String lastNamePerson;
 	private int idPerson;
 	private String post;
-
+	private String room;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -107,7 +107,7 @@ public class Login extends JFrame {
 		
 		try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
 
-	    	   String SQL ="SELECT Colloborators.ID, Colloborators.LastName, Colloborators.Name, Colloborators.SecondName, Colloborators.Post, Login.Login, Login.Password FROM Colloborators, Login WHERE Colloborators.ID = Login.ID_L AND Login.Login = '"+login+"' AND Login.Password = '"+password+"'";
+	    	   String SQL ="SELECT Colloborators.ID, Colloborators.LastName, Colloborators.Name, Colloborators.SecondName, Colloborators.Post, Login.Login, Login.Password, RoomTable.RoomNumber FROM Colloborators, Login, RoomTable WHERE Colloborators.ID = Login.ID_L AND Login.Login = '"+login+"' AND Login.Password = '"+password+"' AND Colloborators.ID_ROOM = RoomTable.ID";
 	    	   ResultSet rs = stmt.executeQuery(SQL);
 	    	   
 	            while (rs.next()) {	
@@ -116,6 +116,7 @@ public class Login extends JFrame {
 	            	lastNamePerson = rs.getString("LastName"); 
 	            	idPerson = rs.getInt("ID");
 	            	post = rs.getString("Post");
+	            	room = rs.getString("RoomNumber");
 	            }
 	            
 	            System.out.println(lastNamePerson + " " + namePerson + " " + secondNamePerson);
@@ -129,9 +130,10 @@ public class Login extends JFrame {
 			JOptionPane.showMessageDialog(null, "Неверный логин или пароль", "Ошибка", JOptionPane.INFORMATION_MESSAGE);
 		}
 		else{
-		new ClientWindow(lastNamePerson, namePerson, secondNamePerson, idPerson, post);
+		new ClientWindow(lastNamePerson, namePerson, secondNamePerson, idPerson, post, room);
 		System.out.println(login + ", " + password);
 		dispose();
+		//System.out.println("Номер кабинета: "+room);
 		}
 		
 	}

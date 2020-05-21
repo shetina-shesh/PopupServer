@@ -55,14 +55,21 @@ public class Server implements Runnable {
 		} else {
 			String users = "/u/";
 			for (int i = 0; i < clients.size() - 1; i++) {
-				users += clients.get(i).lastName + " " + clients.get(i).name
-						+ " " + clients.get(i).secondName + clients.get(i).ID +" - "+clients.get(i).post
-						+ "/n/";
+				//clients.get(i).room + " - " + 
+				users += clients.get(i).ID + "/i/" + clients.get(i).room + " - " + clients.get(i).lastName + " " + clients.get(i).name + " "
+				+ clients.get(i).secondName + " - "+clients.get(i).post
+				+ "/n/";
+				
+				//users += clients.get(i).lastName + " " + clients.get(i).name
+				//		+ " " + clients.get(i).secondName + clients.get(i).ID +" - "+clients.get(i).post
+				//		+ "/n/";
 			}
-			users += clients.get(clients.size() - 1).lastName + " "
+			users += clients.get(clients.size() - 1).ID + "/i/" 
+					+clients.get(clients.size() - 1).room + " - "
+					+clients.get(clients.size() - 1).lastName + " "
 					+ clients.get(clients.size() - 1).name + " "
-					+ clients.get(clients.size() - 1).secondName
-					+ clients.get(clients.size() - 1).ID + " - "+clients.get(clients.size() - 1).post+"/e/";
+					+ clients.get(clients.size() - 1).secondName + " - "
+					+clients.get(clients.size() - 1).post + "/e/";
 			sendToAll(users);
 		}
 	}
@@ -138,11 +145,10 @@ public class Server implements Runnable {
 
 			String[] users = string.split("/c/|/n/|/e/");
 
-			int id = Integer.parseInt(string.replaceAll("[^0-9]", ""));
+			int id = Integer.parseInt(users[4]);
 			System.out.println("ID " + id);
-			clients.add(new ServerClient(users[1], users[2], users[3], packet
-					.getAddress(), packet.getPort(), id, users[5]));
-			System.out.println(users[1] + users[2] + users[3]);
+			clients.add(new ServerClient(users[1], users[2], users[3], packet.getAddress(), packet.getPort(), id, users[5], users[6]));
+			System.out.println(users[1] + users[2] + users[3] + " - " + users[6]);
 			String connectionID = "/c/";
 			send(connectionID, packet.getAddress(), packet.getPort());
 
