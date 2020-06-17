@@ -14,8 +14,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -60,6 +63,10 @@ public class ClientWindow extends JFrame implements Runnable{
 	private boolean running = false;
 	private JTabbedPane tabbedPane;
 	private HashMap<String, String> hashMapUsers;
+	
+	private String timeOnPCuser = "";
+	private String timeGlobalChat = "";
+	private String keyTime = "";
 	
 	public ClientWindow(String lastName, String name, String secondName, Integer idPerson, String post, String room) {
 		client = new Client(lastName, name, secondName, idPerson, post, room);
@@ -133,7 +140,7 @@ public class ClientWindow extends JFrame implements Runnable{
 		
 		JLabel lblNewLabel = new JLabel("\u041E\u043D\u043B\u0430\u0439\u043D \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u0438:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblNewLabel.setBounds(12, 123, 191, 16);
+		lblNewLabel.setBounds(12, 142, 191, 16);
 		contentPane.add(lblNewLabel);
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -170,19 +177,6 @@ public class ClientWindow extends JFrame implements Runnable{
 		JLabel lblNewLabel_3 = new JLabel("\u0414\u043E\u043B\u0436\u043D\u043E\u0441\u0442\u044C");
 		lblNewLabel_3.setBounds(233, 171, 74, 16);
 		contentPane.add(lblNewLabel_3);
-		
-		JLabel lblNewLabel_4 = new JLabel("\u0412\u044B\u0431\u0435\u0440\u0438\u0442\u0435 \u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u0435\u043B\u044F.");
-		lblNewLabel_4.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		lblNewLabel_4.setBounds(12, 92, 237, 37);
-		contentPane.add(lblNewLabel_4);
-		
-		TextField textField = new TextField();
-		textField.setBounds(12, 145, 295, 24);
-		contentPane.add(textField);
-		
-		Button button = new Button("O");
-		button.setBounds(316, 145, 26, 24);
-		contentPane.add(button);
 		
 		final JPopupMenu pMenuPerson = new JPopupMenu();
 		JMenuItem addPerson = new JMenuItem("Написать");
@@ -298,24 +292,56 @@ public class ClientWindow extends JFrame implements Runnable{
 		if(message.equals("")) return;
 		
 		if(text){
-			message = client.getLastName() + " " +client.getName() + ": " + message;
-			message = "/f/" + message + "/e//id/"+client.getIdPerson()+"_";
-			
+		    DateFormat dateFormat = new SimpleDateFormat("HH:mm (dd.MM.yyyy)");
+		    Date date = new Date();
+		    String timeSendMessage = dateFormat.format(date);
+		    
 			if(tabbedPane.getSelectedIndex() == 0){
-				// Выбор вкладки общий чат
-				message = message + "Общий чат/e2/";
-				System.out.println("Ziro");
+				if(timeSendMessage.equals(timeGlobalChat)){
+					message = client.getLastName() + " " +client.getName() + ": " + message;
+					message = "/f/" + message + "/e//id/"+client.getIdPerson()+"_";
+					message = message + "Общий чат/e2/";
+				}else{
+					timeGlobalChat=timeSendMessage;
+					message = "\t\t\t\t\t" + timeSendMessage + "\n" + client.getLastName() + " " +client.getName() + ": " + message; 
+					message = "/f/" + message + "/e//id/"+client.getIdPerson()+"_";
+					message = message + "Общий чат/e2/";
+				}
+				//message = message + "Общий чат/e2/";
 			}else{
-			
+				
 			String string = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
 			for(Map.Entry<String, String> entry: hashMapUsers.entrySet()){
 				if(entry.getValue().equals(string)){
-					message = message + entry.getKey()+"/e2/";
+					if(entry.getKey().equals(keyTime)){
+						if(timeSendMessage.equals(timeOnPCuser)){
+							message = client.getLastName() + " " +client.getName() + ": " + message;
+							message = "/f/" + message + "/e//id/"+client.getIdPerson()+"_";
+							message = message + entry.getKey()+"/e2/";
+						}else{
+							//keyTime = entry.getKey();
+							timeOnPCuser=timeSendMessage;
+							message = "\t\t\t\t\t" + timeSendMessage + "\n" + client.getLastName() + " " +client.getName() + ": " + message; 
+							message = "/f/" + message + "/e//id/"+client.getIdPerson()+"_";
+							message = message + entry.getKey()+"/e2/";
+						}
+					}else{
+						keyTime = entry.getKey();
+						timeOnPCuser=timeSendMessage;
+						message = "\t\t\t\t\t" + timeSendMessage + "\n" + client.getLastName() + " " +client.getName() + ": " + message; 
+						message = "/f/" + message + "/e//id/"+client.getIdPerson()+"_";
+						message = message + entry.getKey()+"/e2/";
+					}
+					//message = message + entry.getKey()+"/e2/";
 				}
 				
 				
 			}
 		}
+		    
+		    //////////////
+
+
 			
 			
 		}
@@ -323,6 +349,7 @@ public class ClientWindow extends JFrame implements Runnable{
 		client.send(message.getBytes());
 		txtSend.setText("");
 	}
+
 	
 	public void listen(){
 		listen = new Thread("Listen"){

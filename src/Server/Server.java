@@ -44,7 +44,7 @@ public class Server implements Runnable {
 
 	public void run() {
 		running = true;
-		System.out.println("Сервер запущен на порту: " + port);
+		System.out.println("РЎРµСЂРІРµСЂ Р·Р°РїСѓС‰РµРЅ РЅР° РїРѕСЂС‚Сѓ: " + port);
 		//manageClients();
 		receive();
 	}
@@ -165,7 +165,7 @@ public class Server implements Runnable {
 					if (entry.getName().equals(fileName + ".txt")) {
 						System.out.println("File confirm 1");
 						
-						//записать в файл
+						//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
 						try {
 							OutputStream outputStream = new FileOutputStream(entry, true);
 							OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
@@ -182,7 +182,7 @@ public class Server implements Runnable {
 						
 						
 						String str = "/m/" + message +"/e/"+idClient+"/e2/";
-						// каждому пользователю свой файл отправляется
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 						for (int i = 0; i < clients.size(); i++) {
 							ServerClient client = clients.get(i);
 							if (clients.get(i).getID() == Integer.parseInt(idSecondClient)) {
@@ -197,7 +197,7 @@ public class Server implements Runnable {
 					} else if (entry.getName().equals(FileNameAnother + ".txt")) {
 						System.out.println("File confirm 2");
 						
-						//записать в файл
+						//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
 						try {
 							OutputStream outputStream = new FileOutputStream(entry, true);
 							OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
@@ -213,7 +213,7 @@ public class Server implements Runnable {
 						}
 						
 						String str = "/m/" + message +"/e/"+idClient+"/e2/";
-						// каждому пользователю свой файл отправляется
+						// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 						for (int i = 0; i < clients.size(); i++) {
 							ServerClient client = clients.get(i);
 							if (clients.get(i).getID() == Integer.parseInt(idSecondClient)) {
@@ -225,7 +225,7 @@ public class Server implements Runnable {
 
 						}
 					}else if(entry.getName().equals(idSecondClient + ".txt")){
-						//записать в файл
+						//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
 						try {
 							OutputStream outputStream = new FileOutputStream(entry, true);
 							OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-8");
@@ -256,9 +256,9 @@ public class Server implements Runnable {
 			String idClient = fileName.split("_")[0];
 			String idSecondClient = fileName.split("_")[1];
 			String FileNameAnother = idSecondClient + "_" + idClient;
-			if (fileName.split("_")[1].equals("Общий чат")) {
+			if (fileName.split("_")[1].equals("РћР±С‰РёР№ С‡Р°С‚")) {
 				file = new File("C:\\EclipseProjects\\PopupMenu\\src\\Server\\ServerUser\\"+ fileName.split("_")[1] + ".txt");
-				System.out.println("Имя файла пришло - "+ fileName.split("_")[1]);
+				System.out.println("пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ - "+ fileName.split("_")[1]);
 				if (file.exists()) {
 					System.out.println("File confirm");
 					try {
@@ -268,7 +268,7 @@ public class Server implements Runnable {
 						while ((str = bfreader.readLine()) != null) {
 							System.out.println(str + "\n");
 							str = "/id/" + str;
-							// каждому пользователю свой файл отправляется
+							// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 							for (int i = 0; i < clients.size(); i++) {
 								ServerClient client = clients.get(i);
 								if (clients.get(i).getID() == Integer.parseInt(idClient)) {
@@ -297,7 +297,7 @@ public class Server implements Runnable {
 								while ((str = bfreader.readLine()) != null) {
 									System.out.println(str + "\n");
 									str = "/id/" + str;
-									// каждому пользователю свой файл отправляется
+									// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 									for (int i = 0; i < clients.size(); i++) {
 										ServerClient client = clients.get(i);
 										if (clients.get(i).getID() == Integer.parseInt(idClient)) {
